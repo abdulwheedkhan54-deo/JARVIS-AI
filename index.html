@@ -3,7 +3,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport
+  " content="width=device-width, initial-scale=1.0">
 <title>JARVIS AI</title>
 
 <style>
@@ -91,54 +92,28 @@ button:active {
   <div id="answer">Waiting for your command...</div>
 </div>
 
-<script>
+
 function speak(text) {
-  const speech = new SpeechSynthesisUtterance(text);
-  speech.lang = "en-US";
-  speechSynthesis.speak(speech);
-}
+  const synth = window.speechSynthesis;
 
-function listen() {
-  const SpeechRecognition =
-    window.SpeechRecognition ||
-    window.webkitSpeechRecognition;
-
-  if (!SpeechRecognition) {
-    document.getElementById("answer").innerText =
-      "Voice recognition is not supported in this browser.";
+  if (!synth) {
+    document.getElementById("status").innerText =
+      "VOICE NOT SUPPORTED";
     return;
   }
 
-  const recognition = new SpeechRecognition();
-  recognition.lang = "en-US";
+  synth.cancel();
 
-  document.getElementById("status").innerText =
-    "LISTENING...";
+  const speech = new SpeechSynthesisUtterance(text);
+  speech.lang = "en-US";
+  speech.rate = 1;
+  speech.pitch = 1;
+  speech.volume = 1;
 
-  recognition.onresult = function(event) {
-    const command = event.results[0][0].transcript;
-
-    document.getElementById("answer").innerText =
-      "You said: " + command;
-
+  speech.onerror = function(event) {
     document.getElementById("status").innerText =
-      "COMMAND RECEIVED";
-
-    speak("I heard you say " + command);
+      "VOICE ERROR: " + event.error;
   };
 
-  recognition.onerror = function() {
-    document.getElementById("status").innerText =
-      "VOICE ERROR";
-  };
-
-  recognition.onend = function() {
-    document.getElementById("status").innerText =
-      "SYSTEM ONLINE";
-  };
-
-  recognition.start();
+  synth.speak(speech);
 }
-</script>
-</body>
-</html>
